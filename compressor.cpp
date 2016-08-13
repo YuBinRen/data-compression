@@ -4,9 +4,10 @@
 #include <map>
 #include <vector>
 #include <algorithm>
-// Implement Encode Here if Needed
+
 using namespace std;
 
+//Debug function to print out dictionary
 template<typename T1, typename T2>
 void printDict(unordered_map<T1, T2> dict){
   cout << "Printing Dictionary" << endl;
@@ -15,16 +16,19 @@ void printDict(unordered_map<T1, T2> dict){
   }
 }
 
+// pair: <character, corresponding index> - used for BWT
 bool tupleCMP(const pair<char, int> &p1, const pair<char, int> &p2){
   return p1.first < p2.first;
 }
 
 string BWTEncode(const string &source){
   int length = source.size() + 1;
-  char END = '\0';
+  char END = '\0'; // pad the end with null character
   string target = source + END;
   vector<string> rotations(length);
-  // Build rotation array
+  
+  // Build rotation array 
+  // abc -> bca
   for(int i = 0; i < length; ++i){
     char front = target[0];
     for(int j = 0; j < length-1; ++j){
@@ -34,7 +38,7 @@ string BWTEncode(const string &source){
     rotations[i] = target;
   }
 
-  //Lexico sort
+  //Sort all of the rotations
   sort(rotations.begin(), rotations.end());
 
   //Take the last char from each rotation
@@ -42,13 +46,14 @@ string BWTEncode(const string &source){
   for(vector<string>::iterator it = rotations.begin(); it != rotations.end(); ++it){
     encoded += *(it->end()-1);
   }
-  // cout << encoded << endl;
+  
   return encoded;
 }
 
 string BWTDecode(const string &source){
   int len = source.length();
-  // cout << source << endl;
+  
+  // map each character to it's corresponding index
   vector<pair<char, int> > A(len);
   for(int i = 0; i < len; ++i){
     A[i] = make_pair(source[i], i);
@@ -62,7 +67,6 @@ string BWTDecode(const string &source){
 
   string decoded = "";
   int index = 0;
-
   for(int i = 0; i < len; ++i){
     index = N[index];
     if(source[index] != '\0'){
