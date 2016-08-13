@@ -2,7 +2,7 @@
 This project is an implementation of the LZW compression algorithm with BWT encoding that was completed as a final project for one of my algorithms classes. My algorithm placed in the top 10 for best <a href="https://en.wikipedia.org/wiki/Data_compression_ratio">compression ratio</a> out of approximately 400 students in the class. 
 
 # Usage
-First build the project with `make`, then either enter input on stdin or provide an input source
+First build the project with `make`, then provide input on stdin or provide an input source.
 
 ```shell
   ./encode < sample2.txt
