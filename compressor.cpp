@@ -60,15 +60,12 @@ string BWTDecode(const string &source){
   }
 
   stable_sort(A.begin(), A.end(), tupleCMP);
-  vector<int> N(len);
-  for(int i = 0; i < len; ++i){
-    N[i] = A[i].second;
-  }
 
+  //rebuild the source string
   string decoded = "";
   int index = 0;
   for(int i = 0; i < len; ++i){
-    index = N[index];
+    index = A[index].second;
     if(source[index] != '\0'){
       decoded += source[index];
     }
@@ -76,12 +73,13 @@ string BWTDecode(const string &source){
   return decoded;
 }
 
+
 unsigned int Encode::Compress( const string &source, unsigned char *& result ){
   const int MAX_DICT_SIZE = 256;
   result = new unsigned char[2]();
   unsigned int result_size = 2;
   unsigned int result_items = 0;
-//  string BWT_source = BWTEncode(source);
+
   unordered_map<string, unsigned int> dict;
   unsigned int size = source.length();
   string target = source;
@@ -93,11 +91,11 @@ unsigned int Encode::Compress( const string &source, unsigned char *& result ){
   // add ASCII charset to dict
   dict.insert(make_pair(string(1, 0), 0));
   for(unsigned short int i = 32; i < 127; ++i){
-    dict.insert(make_pair(string(1, i), i));
+    dict.insert(make_pair(string(1, i), i-31));
   }
 
   string w = "";
-  unsigned short int code = 128;
+  unsigned short int code = 97;
 
   for(unsigned int i = 0; i < size; ++i){
     string next = string(1, target[i]);
@@ -108,9 +106,9 @@ unsigned int Encode::Compress( const string &source, unsigned char *& result ){
       // add ASCII charset to dict
       dict.insert(make_pair(string(1, 0), 0));
       for(unsigned short int i = 32; i < 127; ++i){
-        dict.insert(make_pair(string(1, i), i));
+        dict.insert(make_pair(string(1, i), i-31));
       }
-      code = 128;
+      code = 97;
     }
 
     unordered_map<string, unsigned int>::iterator found = dict.find(w + next);
@@ -149,14 +147,14 @@ unsigned int Encode::Compress( const string &source, unsigned char *& result ){
 }
 
 string Encode::Decompress( unsigned char * codedText, unsigned int length ) {
-  unsigned short int code = 128;
+  unsigned short int code = 97;
   const int MAX_DICT_SIZE = 256;
   unordered_map<unsigned char, string> dict;
 
   // add ASCII charset to dict
   dict.insert(make_pair(0, string(1, 0)));
   for(unsigned short int i = 32; i < 127; ++i){
-    dict.insert(make_pair(i, string(1, i)));
+    dict.insert(make_pair(i-31, string(1, i)));
   }
 
   string s = dict[codedText[0]];
@@ -171,9 +169,9 @@ string Encode::Decompress( unsigned char * codedText, unsigned int length ) {
       // add ASCII charset to dict
       dict.insert(make_pair(0, string(1, 0)));
       for(unsigned short int i = 32; i < 127; ++i){
-        dict.insert(make_pair(i, string(1, i)));
+        dict.insert(make_pair(i-31, string(1, i)));
       }
-      code = 128;
+      code = 97;
     }
 
     unordered_map<unsigned char, string>::iterator found = dict.find(currentCode);
@@ -182,8 +180,10 @@ string Encode::Decompress( unsigned char * codedText, unsigned int length ) {
     if(found != dict.end()){
       s = found->second;
     }else if(currentCode == code){
+      //special case (decoder one step behind)
       s = s_prev + s_prev[0];
     }else{
+      // Something went wrong
       cerr << "ERROR" << endl;
       cerr << s << endl;
       cerr << int(currentCode) << endl;
