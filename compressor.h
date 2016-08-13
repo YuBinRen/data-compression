@@ -1,11 +1,10 @@
+#ifndef __COMPRESSOR_H__
+#define __COMPRESSOR_H__
+
 #include <iostream>
 #include <string>
 
 using namespace std;
-
-/*  Skeleton for Encode
-    You may add as many functions/fields as required to implement your solution. 
-    You may NOT store a copy of the source text!  Doing so results in a score of 0. */
 
 class Encode
 {
@@ -50,3 +49,5 @@ class Encode
         } 
         
 };
+
+#endif
